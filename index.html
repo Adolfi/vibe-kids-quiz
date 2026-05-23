@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disco Quiz!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Nunito', sans-serif; }
+
+        .disco-bg {
+            background: linear-gradient(135deg, #0d0030, #1a0050, #0a0028, #200045);
+            background-size: 400% 400%;
+            animation: disco-bg 10s ease infinite;
+        }
+        @keyframes disco-bg {
+            0%, 100% { background-position: 0% 50%; }
+            50%       { background-position: 100% 50%; }
+        }
+
+        .rainbow-text {
+            background: linear-gradient(90deg, #ff00a8, #b800ff, #00d4ff, #39ff14, #ff9500, #ff00a8);
+            background-size: 400% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow-flow 4s linear infinite;
+        }
+        @keyframes rainbow-flow {
+            0%   { background-position: 0% center; }
+            100% { background-position: 400% center; }
+        }
+
+        .disco-spin {
+            display: inline-block;
+            animation: spin 6s linear infinite;
+            filter: drop-shadow(0 0 24px rgba(255,255,255,0.7));
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .card-glass {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        @keyframes bounceIn {
+            0%   { transform: scale(0.4); opacity: 0; }
+            60%  { transform: scale(1.08); opacity: 1; }
+            80%  { transform: scale(0.96); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #ff00a8, #b800ff, #00d4ff);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Option tiles — display only, not interactive */
+        .opt-tile {
+            font-family: 'Fredoka One', cursive;
+            border: 2px solid;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 14px 10px;
+            user-select: none;
+        }
+        .opt-label {
+            font-size: 2rem;
+            line-height: 1;
+        }
+        .opt-text {
+            font-size: clamp(0.9rem, 3vw, 1.05rem);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .sparkle-float {
+            position: fixed;
+            pointer-events: none;
+            user-select: none;
+            animation: sparkle-rise linear forwards;
+            z-index: 0;
+        }
+        @keyframes sparkle-rise {
+            0%   { transform: translateY(105vh) rotate(0deg) scale(0.5); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { transform: translateY(-15vh) rotate(540deg) scale(1.2); opacity: 0; }
+        }
+
+        .confetti-pop {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            animation: confetti-explode 1.2s ease-out forwards;
+        }
+        @keyframes confetti-explode {
+            0%   { transform: scale(0) rotate(0deg); opacity: 1; }
+            50%  { transform: scale(1.6) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0.4) rotate(360deg) translateY(60px); opacity: 0; }
+        }
+
+        .type-badge {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 900;
+        }
+
+        .music-bounce { animation: music-bounce 0.6s ease infinite alternate; }
+        @keyframes music-bounce {
+            from { transform: scale(1) rotate(-5deg); }
+            to   { transform: scale(1.2) rotate(5deg); }
+        }
+
+        /* Answer key on results page */
+        .answer-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .answer-num {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            color: #b800ff;
+            min-width: 28px;
+        }
+        .answer-q {
+            font-size: 0.85rem;
+            color: #9b7fc7;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .answer-badge {
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.85rem;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: linear-gradient(135deg,#39ff14,#00c820);
+            color: #002200;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="disco-bg min-h-screen" style="min-height:100dvh;">
+    <audio id="bg-music" loop src="background-music.mp3"></audio>
+
+    <!-- Mute/unmute button -->
+    <button id="mute-btn" onclick="toggleMute()"
+        title="Ljud av/på"
+        style="position:fixed; top:14px; right:14px; z-index:1000;
+               width:44px; height:44px; border-radius:50%; border:none; cursor:pointer;
+               background:rgba(255,255,255,0.12); backdrop-filter:blur(8px);
+               border:1px solid rgba(255,255,255,0.2);
+               font-size:1.3rem; display:flex; align-items:center; justify-content:center;
+               transition:transform 0.15s ease, background 0.15s ease;"
+        onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+        onmouseout="this.style.background='rgba(255,255,255,0.12)'"
+        onmousedown="this.style.transform='scale(0.9)'"
+        onmouseup="this.style.transform='scale(1)'">
+        🔊
+    </button>
+
+    <div id="sparkle-container" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;"></div>
+    <div id="app" class="relative z-10"></div>
+
+    <script>
+    // ── Ambient sparkles ──────────────────────────────────────────
+    const SPARKLE_CHARS = ['✨','⭐','🌟','💫','🎵','🎶','🪩','💥','🎊','🌈','🎈'];
+    function spawnSparkle() {
+        const el = document.createElement('span');
+        el.className = 'sparkle-float';
+        el.textContent = SPARKLE_CHARS[Math.floor(Math.random() * SPARKLE_CHARS.length)];
+        el.style.left = (Math.random() * 100) + 'vw';
+        el.style.fontSize = (14 + Math.random() * 22) + 'px';
+        const dur = 5 + Math.random() * 5;
+        el.style.animationDuration = dur + 's';
+        document.getElementById('sparkle-container').appendChild(el);
+        setTimeout(() => el.remove(), dur * 1000);
+    }
+    setInterval(spawnSparkle, 700);
+    for (let i = 0; i < 6; i++) spawnSparkle();
+
+    // ── Confetti burst ────────────────────────────────────────────
+    const CONFETTI = ['🎉','🎊','⭐','🌟','💫','✨','🎈','🎆','🪩','💥'];
+    function spawnConfetti(count = 12) {
+        for (let i = 0; i < count; i++) {
+            setTimeout(() => {
+                const el = document.createElement('div');
+                el.className = 'confetti-pop';
+                el.textContent = CONFETTI[Math.floor(Math.random() * CONFETTI.length)];
+                el.style.left   = (10 + Math.random() * 80) + 'vw';
+                el.style.top    = (5  + Math.random() * 55) + 'vh';
+                el.style.fontSize = (18 + Math.random() * 18) + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1400);
+            }, i * 90);
+        }
+    }
+
+    // ── State ─────────────────────────────────────────────────────
+    let questions = [];
+    let current   = 0;
+
+    // ── Init ──────────────────────────────────────────────────────
+    async function init() {
+        try {
+            const resp = await fetch('questions.json');
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            questions = await resp.json();
+            renderWelcome();
+        } catch (e) {
+            renderError();
+        }
+    }
+
+    // ── Welcome ───────────────────────────────────────────────────
+    function renderWelcome() {
+        document.getElementById('app').innerHTML = `
+            <div class="min-h-screen flex flex-col items-center justify-center p-6 text-center select-none" style="min-height:100dvh;">
+                <div class="disco-spin text-8xl mb-3">🪩</div>
+                <h1 class="rainbow-text font-bold leading-none mb-2"
+                    style="font-family:'Fredoka One',cursive; font-size:clamp(2.8rem,12vw,5.5rem);">
+                    DISCO QUIZ!
+                </h1>
+                <br>
+                <p class="text-purple-300 text-xl font-bold mb-1">🎉 ${questions.length} frågor! 🎉</p>
+                <p class="text-purple-500 text-base mb-4">Lyckas ni få ihop 10 rätta svar tillsammans?</p>
+                <p class="text-purple-400 text-sm mb-10 max-w-xs">
+                    Anteckna lagets svar på papper,<br>
+                    facit visas i slutet av quiz.
+                </p>
+                <button onclick="startQuiz()"
+                    class="text-white font-bold py-5 px-16 rounded-full transition-all active:scale-95"
+                    style="font-family:'Fredoka One',cursive; font-size:1.7rem;
+                           background:linear-gradient(135deg,#ff00a8,#8b00ff,#00d4ff);
+                           box-shadow:0 0 24px #ff00a8, 0 0 50px rgba(139,0,255,0.4);">
+                    🕺 NU KÖR VI! 💃
+                </button>
+            </div>`;
+    }
+
+    function startQuiz() {
+        current = 0;
+        renderQuestion();
+    }
+
+    // ── Option labels ─────────────────────────────────────────────
+    // Classic 1 / X / 2 quiz style
+    const OPT_META = [
+        { label: '1', bg: 'linear-gradient(135deg,#e91e8c,#c2185b)', border: '#ff6abf', text: '#ffd6ee' },
+        { label: 'X', bg: 'linear-gradient(135deg,#6a1b9a,#4a148c)', border: '#ce93d8', text: '#f3d9ff' },
+        { label: '2', bg: 'linear-gradient(135deg,#0097a7,#006064)', border: '#00e5ff', text: '#d6f9ff' },
+    ];
+
+    // ── Question ──────────────────────────────────────────────────
+    function renderQuestion() {
+        const q   = questions[current];
+        const pct = Math.round((current / questions.length) * 100);
+
+        document.getElementById('app').innerHTML = `
+            <div class="min-h-screen flex flex-col items-center p-4 pt-5" style="min-height:100dvh;">
+
+                <!-- Top bar -->
+                <div class="w-full max-w-xl flex items-center justify-between mb-3">
+                    <div class="card-glass rounded-full px-4 py-2 text-purple-300 font-bold text-sm">
+                        ❓ ${current + 1} <span class="text-purple-600">/ ${questions.length}</span>
+                    </div>
+                    <div class="rainbow-text font-bold text-lg select-none" style="font-family:'Fredoka One',cursive;">🪩 DISCO</div>
+                    <div class="card-glass rounded-full px-4 py-2 text-purple-400 font-bold text-xs select-none">
+                        📝 Anteckna!
+                    </div>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="w-full max-w-xl h-2.5 bg-white bg-opacity-10 rounded-full mb-5 overflow-hidden">
+                    <div class="progress-fill h-full rounded-full" style="width:${pct}%;"></div>
+                </div>
+
+                <!-- Card -->
+                <div class="card-glass rounded-3xl p-5 w-full max-w-xl bounce-in">
+
+                    <!-- Type badge -->
+                    <div class="flex justify-center mb-3">
+                        ${renderTypeBadge(q['question-type'])}
+                    </div>
+
+                    <!-- Media -->
+                    ${renderMedia(q)}
+
+                    <!-- Question text -->
+                    <h2 class="text-white text-center font-extrabold mt-3 mb-5 leading-snug"
+                        style="font-family:'Fredoka One',cursive; font-size:clamp(1.15rem,5vw,1.65rem);">
+                        ${q.question}
+                    </h2>
+
+                    <!-- Option tiles (display only) -->
+                    <div class="grid grid-cols-3 gap-3 mb-5">
+                        ${(q.options || []).map((opt, i) => {
+                            const m = OPT_META[i % 3];
+                            return `
+                            <div class="opt-tile" style="background:${m.bg}; border-color:${m.border}60;">
+                                <span class="opt-label" style="color:${m.text};">${m.label}</span>
+                                <span class="opt-text" style="color:${m.text};">${opt}</span>
+                            </div>`;
+                        }).join('')}
+                    </div>
+
+                    <!-- Next button -->
+                    <div class="flex justify-center">
+                        <button onclick="nextQuestion()"
+                            class="text-white font-bold py-4 px-12 rounded-full transition-all active:scale-95 w-full"
+                            style="font-family:'Fredoka One',cursive; font-size:1.3rem;
+                                   background:linear-gradient(135deg,#ff00a8,#8b00ff);
+                                   box-shadow:0 0 16px rgba(255,0,168,0.5);">
+                            ${current + 1 === questions.length ? '🏆 Visa Facit!' : 'Nästa ➜'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function renderTypeBadge(type) {
+        const map = {
+            'plain-text': { icon: '🧠', label: 'KUNSKAP',   color: '#b800ff' },
+            'music':      { icon: '🎵', label: 'MUSIK',     color: '#ff00a8' },
+            'video':      { icon: '🎬', label: 'VIDEO',     color: '#00d4ff' },
+            'street-view': { icon: '🏘️', label: 'STREET VIEW', color: '#39ff14' },
+        };
+        const b = map[type] || map['plain-text'];
+        return `<span class="type-badge px-3 py-1 rounded-full inline-flex items-center gap-1"
+            style="background:${b.color}22; border:1px solid ${b.color}55; color:${b.color};">
+            ${b.icon} ${b.label}
+        </span>`;
+    }
+
+    function renderMedia(q) {
+        switch (q['question-type']) {
+            case 'music':
+                return `
+                    <div class="flex flex-col items-center gap-2 py-2">
+                        <div class="text-6xl music-bounce select-none">🎵</div>
+                        <p class="text-purple-300 text-sm font-bold">Lyssna på musiken!</p>
+                    </div>`;
+
+            case 'video': {
+                // Extract src from the iframe string stored in video-iframe
+                const srcMatch = (q['video-iframe'] || '').match(/src="([^"]+)"/);
+                const src = srcMatch ? srcMatch[1].replace(/&amp;/g, '&') : '';
+                return `
+                    <div class="w-full rounded-2xl overflow-hidden" style="aspect-ratio:16/9;">
+                        <iframe src="${src}"
+                            style="width:100%; height:100%; border:0;"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen>
+                        </iframe>
+                    </div>`;
+            }
+
+            case 'street-view':
+                return `<img src="${q['file']}" alt="Street view"
+                    class="w-full rounded-2xl object-cover"
+                    style="max-height:220px;">`;
+
+            case 'plain-text':
+            default:
+                if (q['image-url']) {
+                    return `<img src="${q['image-url']}" alt=""
+                        class="w-full rounded-2xl object-cover"
+                        style="max-height:220px;">`;
+                }
+                return `<div class="flex justify-center py-1 select-none"><span class="text-5xl">🧠</span></div>`;
+        }
+    }
+
+    function nextQuestion() {
+        current++;
+        if (current >= questions.length) {
+            renderAnswerKey();
+        } else {
+            renderQuestion();
+        }
+    }
+
+    // ── Answer key (results) ──────────────────────────────────────
+    function renderAnswerKey() {
+        const rows = questions.map((q, i) => {
+            // Find which label (1/X/2) the correct answer maps to
+            const idx   = q.options.indexOf(q.answer);
+            const label = idx >= 0 ? OPT_META[idx].label : '?';
+            const short = q.question.length > 45 ? q.question.slice(0, 44) + '…' : q.question;
+            return `
+                <div class="answer-row">
+                    <span class="answer-num">${i + 1}.</span>
+                    <span class="answer-q">${short}</span>
+                    <span class="answer-badge">${label} · ${q.answer}</span>
+                </div>`;
+        }).join('');
+
+        document.getElementById('app').innerHTML = `
+            <div class="min-h-screen flex flex-col items-center p-4 pt-6 pb-10" style="min-height:100dvh;">
+                <div class="disco-spin text-6xl mb-3 select-none">🪩</div>
+                <h1 class="rainbow-text font-bold mb-1 select-none"
+                    style="font-family:'Fredoka One',cursive; font-size:clamp(2rem,9vw,3rem);">
+                    FACIT!
+                </h1>
+                <p class="text-purple-300 font-bold mb-5 text-sm">Rätta era papper! 📝</p>
+
+                <div class="w-full max-w-xl card-glass rounded-3xl p-5 bounce-in flex flex-col gap-2 mb-6">
+                    ${rows}
+                </div>
+
+                <button onclick="startQuiz()"
+                    class="text-white font-bold py-4 px-12 rounded-full transition-all active:scale-95 select-none"
+                    style="font-family:'Fredoka One',cursive; font-size:1.2rem;
+                           background:linear-gradient(135deg,#ff00a8,#8b00ff,#00d4ff);
+                           box-shadow:0 0 20px rgba(255,0,168,0.5);">
+                    🔄 Kör igen!
+                </button>
+            </div>`;
+
+        for (let i = 0; i < 4; i++) {
+            setTimeout(() => spawnConfetti(14), i * 350);
+        }
+    }
+
+    // ── Error ─────────────────────────────────────────────────────
+    function renderError() {
+        document.getElementById('app').innerHTML = `
+            <div class="min-h-screen flex items-center justify-center p-6" style="min-height:100dvh;">
+                <div class="card-glass rounded-3xl p-8 text-center max-w-sm w-full">
+                    <div class="text-6xl mb-4">😬</div>
+                    <h2 class="text-white text-2xl font-bold mb-2" style="font-family:'Fredoka One',cursive;">Hoppsan!</h2>
+                    <p class="text-purple-300 mb-3">
+                        Kunde inte ladda <code class="text-pink-400">questions.json</code>.
+                    </p>
+                    <p class="text-purple-400 text-sm">Starta en lokal server:</p>
+                    <code class="block mt-2 text-cyan-400 text-xs bg-black bg-opacity-40 px-3 py-2 rounded-lg">
+                        python3 -m http.server
+                    </code>
+                    <p class="text-purple-500 text-xs mt-2">öppna sen <span class="text-cyan-400">localhost:8000</span></p>
+                </div>
+            </div>`;
+    }
+
+    // ── Background music ──────────────────────────────────────────
+    const bgMusic = document.getElementById('bg-music');
+    let muted = false;
+
+    function startMusic() {
+        bgMusic.volume = 0.4;
+        bgMusic.play().catch(() => {
+            // Autoplay blocked — start on first user interaction
+            document.addEventListener('click', () => bgMusic.play(), { once: true });
+        });
+    }
+
+    function toggleMute() {
+        muted = !muted;
+        bgMusic.muted = muted;
+        document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+    }
+
+    startMusic();
+
+    // ── Go ────────────────────────────────────────────────────────
+    init();
+    </script>
+</body>
+</html>

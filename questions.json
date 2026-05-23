@@ -1,0 +1,129 @@
+[{
+    "id": 1,
+    "question-type": "plain-text",
+    "image-url": "https://www.historyhit.com/app/uploads/bis-images/5150542/The-Eiffel-Tower-690x388-f50_50.jpg?x64072",
+    "question": "I sommar ska Liv åka tåg till Paris. Men i vilket land ligger egentligen Paris?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Italien",
+        "Sverige",
+        "Frankrike"
+    ],
+    "answer": "Frankrike"
+},
+{
+    "id": 2,
+    "question-type": "music",
+    "question": "Lyssna på låten som spelas i högtalarna. Vem är det som sjunger?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Shakira",
+        "Zara Larsson",
+        "Crazy Frog"
+    ],
+    "answer": "Zara Larsson"
+},
+{
+    "id": 3,
+    "question-type": "video",
+    "video-iframe": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/LBErnXPn1kY?si=T4A3nT4q6WffBlC5&amp;start=15\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>",
+    "question": "Hjältarna i KPOP Demon Hunters, som räddar världen med sina fantastiska röster, heter Rumi, Mira och ...?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Britt-Marie",
+        "Zoey",
+        "Juno"
+    ],
+    "answer": "Zoey"
+},
+{
+    "id": 4,
+    "question-type": "street-view",
+    "file": "/street-view1.png",
+    "question": "Vem bor här?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Eliana",
+        "Florence",
+        "Elsa"
+    ],
+    "answer": "Elsa"
+},
+{
+    "id": 5,
+    "question-type": "plain-text",
+    "image-url": "https://www.nyaprojekt.se/wp-content/uploads/2024/03/bild1.png",
+    "question": "Efter sommaren ska ni börja första klass på Bräckeskolan. Men vem mer har också gått på Bräckeskolan som barn?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Konstantins Hund",
+        "Livs Mamma",
+        "Elianas Pappa"
+    ],
+    "answer": "Livs Mamma Emelie"
+},
+{
+    "id": 6,
+    "question-type": "plain-text",
+    "image-url": "https://cdn.marvel.com/content/2x/005smp_com_mas_mob_03_3.jpg",
+    "question": "Vad heter egentligen Spindelmannen, när han inte är Spindelmannen?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Peter Parker",
+        "Christer Lundin",
+        "Jack Johnson"
+    ],
+    "answer": "Peter Parker"
+},
+{
+    "id": 7,
+    "question-type": "plain-text",
+    "image-url": "eriksberg-kranen.png",
+    "question": "Vad brukar det egentligen stå på bockkranen??",
+    "option-type": "multiple-choice",
+    "options": [
+        "Eriksberg",
+        "Lorenzberg",
+        "Hendriksberg"
+    ],
+    "answer": "Eriksberg"
+},
+{
+    "id": 8,
+    "question-type": "street-view",
+    "file": "/street-view2.png",
+    "question": "Vems utsikt är detta?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Nils",
+        "Max",
+        "Juni"
+    ],
+    "answer": "Juni"
+},
+{
+    "id": 9,
+    "question-type": "music",
+    "question": "Musikfråga igen! Lyssna på låten. I vilken film är denna låten med?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Lejonkungen",
+        "Djungelboken",
+        "Robin Hood"
+    ],
+    "answer": "Robin Hood"
+},
+{
+    "id": 10,
+    "question-type": "plain-text",
+    "image-url": "https://i.imgflip.com/3sw14v.gif",
+    "question": "Vad kallas denna typen av dans som Sonic gör?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Shuffla",
+        "Moonwalk",
+        "Flossa"
+    ],
+    "answer": "Moonwalk"
+}
+]
