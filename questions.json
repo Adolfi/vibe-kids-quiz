@@ -39,7 +39,7 @@
 {
     "id": 4,
     "question-type": "street-view",
-    "file": "/street-view1.png",
+    "file": "https://github.com/Adolfi/vibe-kids-quiz/blob/main/street-view1.png?raw=true",
     "question": "Vem bor här?",
     "option-type": "multiple-choice",
     "options": [
@@ -78,7 +78,7 @@
 {
     "id": 7,
     "question-type": "plain-text",
-    "image-url": "eriksberg-kranen.png",
+    "image-url": "https://github.com/Adolfi/vibe-kids-quiz/blob/main/eriksberg-kranen.png?raw=true",
     "question": "Vad brukar det egentligen stå på bockkranen??",
     "option-type": "multiple-choice",
     "options": [
@@ -91,7 +91,7 @@
 {
     "id": 8,
     "question-type": "street-view",
-    "file": "/street-view2.png",
+    "file": "https://github.com/Adolfi/vibe-kids-quiz/blob/main/street-view2.png?raw=true",
     "question": "Vems utsikt är detta?",
     "option-type": "multiple-choice",
     "options": [
