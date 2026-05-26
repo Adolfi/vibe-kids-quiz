@@ -245,8 +245,8 @@
                     DISCO QUIZ!
                 </h1>
                 <br>
-                <p class="text-purple-300 text-4xl font-bold mb-1">Totalt ${questions.length} frågor!</p>
-                <p class="text-purple-500 text-base mb-4">Lyckas ni få ihop 10 rätta svar tillsammans för att låsa upp första siffran i koden?</p>
+                <p class="text-purple-300 text-4xl font-bold mb-1">Totalt ${questions.length} frågor för totalt 36 poäng!</p>
+                <p class="text-purple-500 text-base mb-4">Lyckas ni få ihop 18 poäng tillsammans för att låsa upp första siffran i kodlåset?</p>
                 <p class="text-purple-400 text-sm mb-10 max-w-xs">
                     Anteckna lagets svar på papper,<br>
                     facit visas i slutet av quiz.
@@ -406,44 +406,168 @@
 
     // ── Answer key (results) ──────────────────────────────────────
     function renderAnswerKey() {
+        const GOAL = 18;
+        const revealed = new Array(questions.length).fill(false);
+        let correctCount = 0;
+        let prizeCelebrated = false;
+
+        window._toggleReveal = function(i) {
+            revealed[i] = !revealed[i];
+            const answerEl = document.getElementById(`ans-${i}`);
+            const markBtn  = document.getElementById(`mark-${i}`);
+            answerEl.style.display = revealed[i] ? 'flex' : 'none';
+            markBtn.style.display = revealed[i] ? 'flex' : 'none';
+            // Rotate chevron
+            document.getElementById(`chev-${i}`).style.transform = revealed[i] ? 'rotate(180deg)' : '';
+        };
+
+        window._markCorrect = function(i) {
+            correctCount++;
+            updateScore();
+        };
+
+        window._showPrize = function() {
+            document.getElementById('prize-modal').style.display = 'flex';
+        };
+
+        window._closePrize = function() {
+            document.getElementById('prize-modal').style.display = 'none';
+        };
+
+        function updateScore() {
+            document.getElementById('correct-num').textContent = correctCount;
+            const pct = Math.min((correctCount / GOAL) * 100, 100);
+            document.getElementById('score-bar').style.width = pct + '%';
+
+            // Stars — light up one by one
+            const starsEl = document.getElementById('stars-grid');
+            starsEl.innerHTML = Array.from({ length: GOAL }, (_, k) =>
+                k < correctCount
+                    ? `<span style="font-size:1.5rem; filter:drop-shadow(0 0 6px gold); transition:all 0.3s;">⭐</span>`
+                    : `<span style="font-size:1.5rem; opacity:0.18;">⭐</span>`
+            ).join('');
+
+            if (correctCount >= GOAL && !prizeCelebrated) {
+                prizeCelebrated = true;
+                for (let k = 0; k < 6; k++) setTimeout(() => spawnConfetti(18), k * 280);
+                document.getElementById('prize-btn').style.display = 'block';
+                document.getElementById('prize-btn').classList.add('bounce-in');
+            }
+        }
+
         const rows = questions.map((q, i) => {
-            // Find which label (1/X/2) the correct answer maps to
             const idx   = q.options.indexOf(q.answer);
             const label = idx >= 0 ? OPT_META[idx].label : '?';
-            const short = q.question.length > 45 ? q.question.slice(0, 44) + '…' : q.question;
             return `
-                <div class="answer-row">
+            <div onclick="_toggleReveal(${i})"
+                style="display:flex; flex-direction:column; gap:8px; padding:12px 14px;
+                       border-radius:12px; background:rgba(255,255,255,0.05);
+                       border:1px solid rgba(255,255,255,0.1); cursor:pointer;">
+                <div style="display:flex; align-items:center; gap:10px;">
                     <span class="answer-num">${i + 1}.</span>
-                    <span class="answer-q">${short}</span>
+                    <span style="flex:1; font-size:0.88rem; color:#c4a8e8; line-height:1.3;">${q.question}</span>
+                    <span id="chev-${i}" style="color:rgba(255,255,255,0.3); font-size:1rem; flex-shrink:0; transition:transform 0.2s;">▾</span>
+                </div>
+                <div id="ans-${i}" style="display:none; align-items:center; gap:10px; padding-top:2px;">
                     <span class="answer-badge">${label} · ${q.answer}</span>
-                </div>`;
+                    <button id="mark-${i}"
+                        onclick="event.stopPropagation(); _markCorrect(${i})"
+                        style="display:none; margin-left:auto; width:38px; height:38px; border-radius:50%;
+                               border:none; cursor:pointer; flex-shrink:0; font-size:1.3rem; font-weight:bold;
+                               background:linear-gradient(135deg,#ff00a8,#8b00ff); color:white;
+                               align-items:center; justify-content:center; transition:all 0.2s;">
+                        +
+                    </button>
+                </div>
+            </div>`;
         }).join('');
 
+        const starsInit = Array.from({ length: GOAL }, () =>
+            `<span style="font-size:1.5rem; opacity:0.18;">⭐</span>`
+        ).join('');
+
         document.getElementById('app').innerHTML = `
-            <div class="min-h-screen flex flex-col items-center p-4 pt-6 pb-10" style="min-height:100dvh;">
-                <div class="disco-spin text-6xl mb-3 select-none">🪩</div>
+            <div class="min-h-screen flex flex-col items-center p-4 pt-5 pb-10" style="min-height:100dvh;">
+                <div class="disco-spin text-5xl mb-2 select-none">🪩</div>
                 <h1 class="rainbow-text font-bold mb-1 select-none"
-                    style="font-family:'Fredoka One',cursive; font-size:clamp(2rem,9vw,3rem);">
+                    style="font-family:'Fredoka One',cursive; font-size:clamp(1.8rem,8vw,2.8rem);">
                     FACIT!
                 </h1>
-                <p class="text-purple-300 font-bold mb-5 text-sm">Rätta era papper! 📝</p>
+                <p class="text-purple-400 text-xs mb-3 font-bold">Tryck på en fråga för att avslöja svaret</p>
 
-                <div class="w-full max-w-xl card-glass rounded-3xl p-5 bounce-in flex flex-col gap-2 mb-6">
+                <!-- Questions -->
+                <div class="w-full max-w-xl card-glass rounded-3xl p-4 bounce-in flex flex-col gap-2 mb-4">
                     ${rows}
                 </div>
 
-                <button onclick="startQuiz()"
-                    class="text-white font-bold py-4 px-12 rounded-full transition-all active:scale-95 select-none"
-                    style="font-family:'Fredoka One',cursive; font-size:1.2rem;
-                           background:linear-gradient(135deg,#ff00a8,#8b00ff,#00d4ff);
-                           box-shadow:0 0 20px rgba(255,0,168,0.5);">
-                    🔄 Kör igen!
-                </button>
-            </div>`;
+                <!-- Score section -->
+                <div class="w-full max-w-xl card-glass rounded-3xl p-5 flex flex-col items-center gap-3 mb-4">
+                    <div class="text-white font-bold text-center select-none"
+                         style="font-family:'Fredoka One',cursive; font-size:1.6rem;">
+                        Antal rätt:&nbsp;<span id="correct-num"
+                            style="background:linear-gradient(90deg,#ff00a8,#00d4ff);
+                                   -webkit-background-clip:text; -webkit-text-fill-color:transparent;">0</span>
+                        &nbsp;/ ${GOAL}
+                    </div>
 
-        for (let i = 0; i < 4; i++) {
-            setTimeout(() => spawnConfetti(14), i * 350);
-        }
+                    <!-- Star grid -->
+                    <div id="stars-grid" style="display:flex; flex-wrap:wrap; justify-content:center; gap:3px;">
+                        ${starsInit}
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="w-full h-4 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.1);">
+                        <div id="score-bar" class="progress-fill h-full rounded-full" style="width:0%;"></div>
+                    </div>
+
+                    <!-- Prize button — hidden until goal reached -->
+                    <button id="prize-btn" onclick="_showPrize()"
+                        style="display:none; font-family:'Fredoka One',cursive; font-size:1.2rem;
+                               color:white; font-weight:bold; padding:14px 40px; border-radius:999px;
+                               border:none; cursor:pointer; margin-top:4px;
+                               background:linear-gradient(135deg,#ffd700,#ff9500);
+                               box-shadow:0 0 24px rgba(255,215,0,0.7);">
+                        🎁 Visa Pris!
+                    </button>
+                </div>
+
+                <button onclick="startQuiz()"
+                    class="text-white font-bold py-3 px-10 rounded-full transition-all active:scale-95 select-none"
+                    style="font-family:'Fredoka One',cursive; font-size:1rem;
+                           background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);">
+                    🔄 Kör igen
+                </button>
+            </div>
+
+            <!-- Prize modal -->
+            <div id="prize-modal" onclick="_closePrize()"
+                style="display:none; position:fixed; inset:0; z-index:2000;
+                       background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);
+                       align-items:center; justify-content:center; padding:24px;">
+                <div onclick="event.stopPropagation()"
+                    class="card-glass rounded-3xl p-8 text-center bounce-in"
+                    style="max-width:360px; width:100%;">
+                    <div style="font-size:3rem; margin-bottom:12px;">🎁🔐🎉</div>
+                    <h2 style="font-family:'Fredoka One',cursive; font-size:1.8rem; color:white; margin-bottom:16px;">
+                        Grattis!
+                    </h2>
+                    <p style="color:#c4a8e8; font-size:1rem; font-weight:700; line-height:1.6; margin-bottom:20px;">
+                        Här är första siffran i<br>kombinationslåset till kistan:
+                    </p>
+                    <div style="font-family:'Fredoka One',cursive; font-size:3.5rem;
+                                background:linear-gradient(90deg,#ffd700,#ff9500);
+                                -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+                        5 _ _
+                    </div>
+                    <button onclick="_closePrize()"
+                        style="margin-top:24px; font-family:'Fredoka One',cursive; font-size:1rem;
+                               color:white; font-weight:bold; padding:12px 32px; border-radius:999px;
+                               border:none; cursor:pointer;
+                               background:rgba(255,255,255,0.12);">
+                        Stäng
+                    </button>
+                </div>
+            </div>`;
     }
 
     // ── Error ─────────────────────────────────────────────────────
