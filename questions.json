@@ -25,16 +25,16 @@
 },
 {
     "id": 3,
-    "question-type": "video",
-    "video-iframe": "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/LBErnXPn1kY?si=T4A3nT4q6WffBlC5&amp;start=15\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>",
-    "question": "Hjältarna i KPOP Demon Hunters, som räddar världen med sina fantastiska röster, heter Rumi, Mira och ...?",
+    "question-type": "plain-text",
+    "image-url": "https://static1.squarespace.com/static/6165dd631559170741299e19/6173776c24bbd723329fa44a/6883f017f776572e1a55af01/1753477253953/Netflix+Kpop+Demon+Hunters+Gwi-Ma+%26+Rumi.png?format=1500w",
+    "question": "Hjältarna i KPOP Demon Hunters, som räddar världen med sina fantastiska röster, heter Rumi, Mira och Zoey. Men vad heter den onda flamman som de kämpar emot?",
     "option-type": "multiple-choice",
     "options": [
-        "Britt-Marie",
-        "Zoey",
-        "Juno"
+        "Joar",
+        "Yee-Ha",
+        "Gwi-Ma"
     ],
-    "answer": "Zoey"
+    "answer": "Gwi-Ma"
 },
 {
     "id": 4,
@@ -65,15 +65,15 @@
 {
     "id": 6,
     "question-type": "plain-text",
-    "image-url": "https://cdn.marvel.com/content/2x/005smp_com_mas_mob_03_3.jpg",
-    "question": "Vad heter egentligen Spindelmannen, när han inte är Spindelmannen?",
+    "image-url": "https://res.cloudinary.com/ddbybfkod/image/upload/v1713996788/blogs/Roman/how-to-make-a-torch-in-minecraft/img1_yltkwe.jpg",
+    "question": "Vilket material behöver man för att bygga en fackla (torch) i Minecraft?",
     "option-type": "multiple-choice",
     "options": [
-        "Peter Parker",
-        "Christer Lundin",
-        "Jack Johnson"
+        "Diamant + pinne",
+        "Kol + pinne",
+        "Guld + sten"
     ],
-    "answer": "Peter Parker"
+    "answer": "Kol + pinne"
 },
 {
     "id": 7,
@@ -121,9 +121,34 @@
     "option-type": "multiple-choice",
     "options": [
         "Shuffla",
-        "Moonwalk",
+        "Moonwalka",
         "Flossa"
     ],
     "answer": "Moonwalk"
+},
+{
+    "id": 11,
+    "question-type": "street-view",
+    "file": "https://github.com/Adolfi/vibe-kids-quiz/blob/main/street-view3.png?raw=true",
+    "question": "Vems bor här egentligen?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Lo",
+        "Kerstin",
+        "Kungen"
+    ],
+    "answer": "Lo"
+},
+{
+    "id": 12,
+    "question-type": "music",
+    "question": "Sista fråga nu! Lyssna på introt från Media. Vad heter låten?",
+    "option-type": "multiple-choice",
+    "options": [
+        "Que sera sera",
+        "Viva L'Amor",
+        "Genom eld och vatten"
+    ],
+    "answer": "Genom eld och vatten"
 }
 ]
